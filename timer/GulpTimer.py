@@ -24,14 +24,12 @@ class StopWatch(Frame):
         """ Make the time label. """
         l1 = Label(self, text='----Sample Audio Name----',font=("Arial",25))
         l1.pack(fill=X, expand=NO, pady=1, padx=2)
-        l1.unbind("<Button-1>")
 
         self.e = Entry(self, font=("Arial",15))
         self.e.pack(pady=2, padx=2)
         
         watervolume = Label(self, text='----Water Voume----',font=("Arial",25))
         watervolume.pack(fill=X, expand=NO, pady=1, padx=2)
-        watervolume.unbind("<Button-1>")
 
         self.volume = Entry(self, font=("Arial",15))
         self.volume.pack(pady=2, padx=2)

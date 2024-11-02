@@ -12,7 +12,8 @@ class StopWatch(Frame):
         self.timestr = StringVar()
         #self.lapstr = StringVar()
         self.e = 0
-        self.volume = 0
+        self.startingVolume = 0
+        self.endingVolume = 0
         self.m = 0
         self.makeWidgets()
         self.laps = []
@@ -28,11 +29,17 @@ class StopWatch(Frame):
         self.e = Entry(self, font=("Arial",15))
         self.e.pack(pady=2, padx=2)
         
-        watervolume = Label(self, text='----Water Voume----',font=("Arial",25))
-        watervolume.pack(fill=X, expand=NO, pady=1, padx=2)
+        startingWaterVolume = Label(self, text='----Starting Water Voume----',font=("Arial",25))
+        startingWaterVolume.pack(fill=X, expand=NO, pady=1, padx=2)
 
-        self.volume = Entry(self, font=("Arial",15))
-        self.volume.pack(pady=2, padx=2)
+        self.startingVolume = Entry(self, font=("Arial",15))
+        self.startingVolume.pack(pady=2, padx=2)
+        
+        endingWaterVolume = Label(self, text='----Ending Water Voume----',font=("Arial",25))
+        endingWaterVolume.pack(fill=X, expand=NO, pady=1, padx=2)
+
+        self.endingVolume = Entry(self, font=("Arial",15))
+        self.endingVolume.pack(pady=2, padx=2)
         
         l = Label(self, textvariable=self.timestr,font=("Arial",50))
         self._setTime(self._elapsedtime)
@@ -114,7 +121,7 @@ class StopWatch(Frame):
         sampleName = str(self.e.get())
         
         #water volume of the sample
-        sampleVolume = str(self.volume.get())
+        sampleVolume = str(int(self.startingVolume.get()) - int(self.endingVolume.get()))
         
         #Name of fields in csv file
         #fields =['SampleName', 'SampleVolume', 'StartTime', 'GulpTimes', 'EndTime']
@@ -140,7 +147,8 @@ class StopWatch(Frame):
             csvwriter = csv.writer(lapfile)
             
             csvwriter.writerow([sampleName,sampleVolume,startTime,gulpTimes,stopTime])
-           
+
+########################################################################################################
 
             
 def main():

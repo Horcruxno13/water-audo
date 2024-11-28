@@ -12,19 +12,34 @@ class StopWatch(Frame):
         self.timestr = StringVar()
         #self.lapstr = StringVar()
         self.e = 0
+        self.startingVolume = 0
+        self.endingVolume = 0
         self.m = 0
         self.makeWidgets()
         self.laps = []
         self.lapmod2 = 0
         self.today = time.strftime("%d %b %Y %H-%M-%S", time.localtime())
+        self.clickCount = 0
         
     def makeWidgets(self):                         
         """ Make the time label. """
-        l1 = Label(self, text='----Sample Audio Name----',font=("Arial",15))
+        l1 = Label(self, text='----Sample Audio Name----',font=("Arial",25))
         l1.pack(fill=X, expand=NO, pady=1, padx=2)
 
         self.e = Entry(self, font=("Arial",15))
         self.e.pack(pady=2, padx=2)
+        
+        startingWaterVolume = Label(self, text='----Starting Water Voume----',font=("Arial",25))
+        startingWaterVolume.pack(fill=X, expand=NO, pady=1, padx=2)
+
+        self.startingVolume = Entry(self, font=("Arial",15))
+        self.startingVolume.pack(pady=2, padx=2)
+        
+        endingWaterVolume = Label(self, text='----Ending Water Voume----',font=("Arial",25))
+        endingWaterVolume.pack(fill=X, expand=NO, pady=1, padx=2)
+
+        self.endingVolume = Entry(self, font=("Arial",15))
+        self.endingVolume.pack(pady=2, padx=2)
         
         l = Label(self, textvariable=self.timestr,font=("Arial",50))
         self._setTime(self._elapsedtime)
@@ -65,7 +80,14 @@ class StopWatch(Frame):
         if not self._running:            
             self._start = time.time() - self._elapsedtime
             self._update()
-            self._running = 1        
+            self._running = 1
+          
+    def Click(self, another_parameter):
+        if self.clickCount > 0:
+            self.Lap()
+        elif self.clickCount == 0:            
+            self.Start()
+            self.clickCount += 1
     
     def Stop(self):                                    
         """ Stop the stopwatch, ignore if stopped. """
@@ -77,6 +99,7 @@ class StopWatch(Frame):
     
     def Reset(self):                                  
         """ Reset the stopwatch. """
+        self.clickCount = 0
         self._start = time.time()         
         self._elapsedtime = 0.0
         self.laps = []   
@@ -97,8 +120,11 @@ class StopWatch(Frame):
         #This is the name of the audiosample
         sampleName = str(self.e.get())
         
+        #water volume of the sample
+        sampleVolume = str(int(self.startingVolume.get()) - int(self.endingVolume.get()))
+        
         #Name of fields in csv file
-        #fields =['SampleName', 'StartTime', 'GulpTimes', 'EndTime']
+        #fields =['SampleName', 'SampleVolume', 'StartTime', 'GulpTimes', 'EndTime']
         
         #First "lap" taken, represents when you start drinking
         startTime = self.laps[0]
@@ -116,11 +142,14 @@ class StopWatch(Frame):
                 continue
             gulpTimes += str(lap)+ "_"
         
-        with open('GulpTime.csv', 'a') as lapfile:
+        with open('GulpTimeElvis.csv', 'a') as lapfile:
             
             csvwriter = csv.writer(lapfile)
             
-            csvwriter.writerow([sampleName,startTime,gulpTimes,stopTime])
+            csvwriter.writerow([sampleName,sampleVolume,startTime,gulpTimes,stopTime])
+
+########################################################################################################
+
             
 def main():
     root = Tk()
@@ -128,12 +157,14 @@ def main():
     sw = StopWatch(root)
     sw.pack(side=TOP)
 
-    Button(root, text='Lap', command=sw.Lap,height = 5, width = 10).pack(side=LEFT)
-    Button(root, text='Start', command=sw.Start,height = 5, width = 10).pack(side=LEFT)
+    #Button(root, text='Lap', command=sw.Lap,height = 5, width = 10).pack(side=LEFT)
+    #Button(root, text='Start', command=sw.Start,height = 5, width = 10).pack(side=LEFT)
     Button(root, text='Stop', command=sw.Stop,height = 5, width = 10).pack(side=LEFT)
     Button(root, text='Reset', command=sw.Reset,height = 5, width = 10).pack(side=LEFT)
     Button(root, text='Save', command=sw.SaveCSV,height = 5, width = 10).pack(side=LEFT)
-    Button(root, text='Quit', command=root.quit,height = 5, width = 10).pack(side=LEFT)    
+    Button(root, text='Quit', command=root.quit,height = 5, width = 10).pack(side=LEFT)
+    
+    root.bind("<Return>", sw.Click)   
     
     root.mainloop()
 
